@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Dentista AI</title>
+    <style>
+        :root {
+            --bg: #0f1220;
+            --card: #161a2b;
+            --ink: #e7e9ff;
+            --muted: #9aa3c7;
+            --accent: #6ee7ff;
+            --border: #253056;
+            --pill: #1f2540;
+            --good: #16a34a;
+            --warn: #eab308;
+            --bad: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(80rem 80rem at 20% -10%, #1a2040 0%, #0f1220 45%, #0a0d19 100%);
+            color: var(--ink);
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            padding: 18px 14px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .04), transparent);
+            backdrop-filter: blur(8px)
+        }
+
+        header h1 {
+            margin: 0 0 6px;
+            font-size: 20px
+        }
+
+        header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        .wrap {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 14px
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px
+        }
+
+        .cols-3 {
+            grid-template-columns: 1.1fr 1fr 1.1fr
+        }
+
+        .cols-2 {
+            grid-template-columns: 1fr 1fr
+        }
+
+        @media (max-width:1200px) {
+            .cols-3 {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01));
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px
+        }
+
+        .card h3 {
+            margin: 0 0 8px;
+            font-size: 15px
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12.5px
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        .btn {
+            appearance: none;
+            background: linear-gradient(180deg, #1c2444, #131a33);
+            border: 1px solid var(--border);
+            color: var(--ink);
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(110, 231, 255, .12)
+        }
+
+        .btn.accent {
+            background: linear-gradient(180deg, #46d7ff, #3ca6ff);
+            color: #07111c;
+            border: 0
+        }
+
+        .btn.ghost {
+            background: transparent
+        }
+
+        .btn.small {
+            padding: 7px 10px;
+            font-size: 12px
+        }
+
+        input[type="range"] {
+            width: 180px
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.1)
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="datetime-local"],
+        select,
+        textarea {
+            width: 100%;
+            background: #0e1326;
+            border: 1px solid var(--border);
+            color: var(--ink);
+            padding: 9px 10px;
+            border-radius: 10px;
+            outline: none;
+            font-size: 14px
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #0c1022;
+            color: var(--muted)
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--pill);
+            border: 1px solid var(--border);
+            color: var(--ink);
+            font-size: 12px
+        }
+
+        .kpi {
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .meter {
+            height: 12px;
+            width: 100%;
+            background: #0c0f1d;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            overflow: hidden
+        }
+
+        .bar {
+            height: 100%;
+            width: 0%;
+            transition: width .5s ease;
+            background: linear-gradient(90deg, #16a34a, #eab308, #ef4444)
+        }
+
+        .score {
+            font-weight: 800;
+            font-size: 26px
+        }
+
+        .good {
+            color: #caffe3;
+            background: #0d2a1a;
+            border-color: #1e5a36
+        }
+
+        .warn {
+            color: #fff2c2;
+            background: #241c05;
+            border-color: #6a5607
+        }
+
+        .bad {
+            color: #ffd2d2;
+            background: #2b0f11;
+            border-color: #6e1a1a
+        }
+
+        .sep {
+            height: 1px;
+            background: var(--border);
+            margin: 10px 0
+        }
+
+        .canvasWrap {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #0a0e1c;
+            min-height: 260px
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto
+        }
+
+        .overlayCtl {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 2
+        }
+
+        .overlayLegend {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            z-index: 2;
+            font-size: 11.5px;
+            color: #e9eaff;
+            background: rgba(15, 18, 32, .55);
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border)
+        }
+
+        .badge {
+            font-size: 10.5px;
+            color: #b8c3ff;
+            border: 1px dashed #3b4a86;
+            padding: 3px 6px;
+            border-radius: 8px
+        }
+
+        .at {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 12px;
+            color: #c8d0ff;
+            background: #0c1022;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            max-height: 220px;
+            overflow: auto
+        }
+
+        .legendScale {
+            height: 16px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #22c55e, #facc15, #ef4444);
+            border: 1px solid var(--border)
+        }
+
+        .mini {
+            font-size: 12px
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px
+        }
+
+        .thumb {
+            position: relative;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden
+        }
+
+        .thumb img {
+            width: 100%;
+            display: block
+        }
+
+        .thumb .cap {
+            position: absolute;
+            left: 6px;
+            bottom: 6px;
+            font-size: 11px;
+            background: rgba(10, 14, 28, .6);
+            padding: 4px 6px;
+            border-radius: 7px;
+            border: 1px solid var(--border)
+        }
+
+        .del {
+            position: absolute;
+            right: 6px;
+            top: 6px;
+            font-size: 11px;
+            background: #2b0f11;
+            color: #ffd2d2;
+            padding: 3px 6px;
+            border-radius: 7px;
+            border: 1px solid #6e1a1a;
+            cursor: pointer
+        }
+
+        .auditBox {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #0c1022;
+            padding: 10px;
+            max-height: 220px;
+            overflow: auto
+        }
+
+        .auditItem {
+            padding: 6px 0;
+            border-bottom: 1px dashed #26305a
+        }
+
+        .auditItem:last-child {
+            border-bottom: 0
+        }
+
+        .auditItem b {
+            color: #e7e9ff
+        }
+
+        @media print {
+
+            header,
+            .btn,
+            .overlayCtl,
+            #settings,
+            #diary,
+            #rem,
+            #auditSwitch {
+                display: none !important
+            }
+
+            body {
+                background: #fff;
+                color: #000
+            }
+
+            .card {
+                border: 0
+            }
+
+            .wrap {
+                max-width: 100%;
+                padding: 0 10px
+            }
+        }
+
+
+        #settings .row {
+            margin-bottom: 12px;
+        }
+
+        #settings .tag {
+            font-size: 13px;
+        }
+
+        .icon-glow {
+            display: inline-block;
+            font-style: normal;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+            filter: saturate(1.5) contrast(1.1);
+            margin-right: 4px;
+            font-size: 1.1em;
+            vertical-align: -2px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="wrap">
+            <h1><span class="icon-glow">🦷</span> Dentista AI <span class="badge">DEMO,
+                    oflayn</span></h1>
+            <p>Rasm yuklang, anketani to'ldiring — xavf bahosi va tavsiyalarni oling. <span class="muted">Tibbiy buyum
+                    emas. Ma'lumotlar lokal tarzda qayta ishlanadi.</span></p>
+        </div>
+    </header>
+
+    <main class="wrap grid cols-3">
+        <!-- COL 1: Foto-tahlil -->
+        <section class="card" id="photo">
+            <h3>1) <span class="icon-glow">📸</span> Bemor rasmi</h3>
+            <div class="row" style="margin:6px 0 8px">
+                <input type="file" id="file" accept="image/*" />
+                <button class="btn ghost" id="demo">Sinov rasmi</button>
+                <label class="row"><input type="checkbox" id="consent" /> <span class="muted">Bemorning lokal qayta
+                        ishlashga roziligi</span></label>
+            </div>
+            <div class="mini muted">Eslatma: sichqoncha bilan rasm ustida torting — qiziqish maydonini (ROI) belgilang.
+                Tahlil faqat uning ichida amalga oshiriladi.</div>
+            <div class="canvasWrap" id="canvasWrap">
+                <div class="overlayCtl">
+                    <label class="tag"><input type="checkbox" id="showInfl" checked /> Blashka</label>
+                    <label class="tag"><input type="checkbox" id="showPlaque" checked /> Karash</label>
+                    <label class="tag"><input type="checkbox" id="showEdges" /> Karies</label>
+                </div>
+                <canvas id="canvas"></canvas>
+                <canvas id="overlay" style="position:absolute; inset:0"></canvas>
+                <div class="overlayLegend">Legenda: <span style="color:#ffffff">Oq</span> / <span
+                        style="color:#8b4513">Jigarrang</span> — boshlang'ich karies; <span
+                        style="color:#000000; background-color: #cccccc; padding: 0 2px; border-radius: 2px;">qora</span>
+                    — chuqur karies</div>
+            </div>
+
+            <div class="sep"></div>
+            <div id="settings">
+                <h4 class="muted" style="margin:6px 0"><span class="icon-glow">⚙️</span> Tahlil sozlanmalari</h4>
+                <div class="row"><label class="tag">Tahlil aniqligi</label>
+                    <input type="range" id="scale" min="400" max="1200" step="50" value="900">
+                    <span id="scaleVal" class="tag">900</span>
+                </div>
+                <div class="row" style="flex-wrap:nowrap"><label class="tag" style="white-space:nowrap">Milk
+                        yallig'lanishni aniqlash sezgirligi</label>
+                    <input type="range" id="inflSens" min="0" max="100" value="35"
+                        style="flex-shrink: 1; min-width: 100px;">
+                    <span id="inflSensVal" class="tag">0.35</span>
+                </div>
+                <div class="row" style="flex-wrap:nowrap"><label class="tag" style="white-space:nowrap">Kuchli
+                        yallig'lanishni aniqlash chegarasi</label>
+                    <input type="range" id="inflSev" min="0" max="100" value="25"
+                        style="flex-shrink: 1; min-width: 100px;">
+                    <span id="inflSevVal" class="tag">0.25</span>
+                </div>
+                <div class="row" style="flex-wrap:nowrap"><label class="tag" style="white-space:nowrap">Tish blashkasini
+                        aniqlash chegarasi</label>
+                    <input type="range" id="plaqueT" min="0" max="100" value="70"
+                        style="flex-shrink: 1; min-width: 100px;">
+                    <span id="plaqueTVal" class="tag">0.70</span>
+                </div>
+                <div class="row" style="flex-wrap:nowrap"><label class="tag" style="white-space:nowrap">Boshlang'ich
+                        kariesni aniqlash chegarasi</label>
+                    <input type="range" id="initCariesT" min="0" max="100" value="65"
+                        style="flex-shrink: 1; min-width: 100px;">
+                    <span id="initCariesTVal" class="tag">0.65</span>
+                </div>
+            </div>
+
+            <div class="sep"></div>
+            <div class="row">
+                <button class="btn accent" id="analyze">Rasmni tekshirish <span class="icon-glow">🔎</span></button>
+                <button class="btn" id="exportImg">Natijani yuklab olish <span class="icon-glow">📥</span></button>
+                <button class="btn ghost" id="reset">Qayta boshlash <span class="icon-glow">🔁</span></button>
+                <span class="pill">Model: <strong id="modelVersion">img-v0.6-demo</strong></span>
+            </div>
+        </section>
+
+        <!-- COL 2: Anketa + Shikoyatlar + O'z-o'zini baholash + Testlar -->
+        <section class="card" id="form">
+            <h3>2) <span class="icon-glow">📋</span> Bemorning anketa ma'lumotlari</h3>
+            <div class="grid cols-2">
+                <div><label class="mini muted">F.I.O / Initsiallar</label><input id="fio" type="text"
+                        placeholder="I.O. yoki shifr"></div>
+                <div><label class="mini muted">Yosh</label><input id="age" type="number" min="18" max="90"></div>
+                <div>
+                    <label class="mini muted">Jins</label>
+                    <select id="sex">
+                        <option value="">—</option>
+                        <option value="F">Ayol</option>
+                        <option value="M">Erkak</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="mini muted">Zararli odatlar</label>
+                    <div class="mini">
+                        <label style="display:block"><input type="checkbox" value="diet" class="habit"> Uglevodli
+                            ratsion</label>
+                        <label style="display:block"><input type="checkbox" value="hygiene" class="habit"> Qoniqarsiz
+                            gigiyena</label>
+                        <label style="display:block"><input type="checkbox" value="mouthBreath" class="habit"> Og'izdan
+                            nafas olish</label>
+                    </div>
+                </div>
+
+                <div style="grid-column:1/-1">
+                    <label class="mini muted" style="display:block; margin-bottom:6px">Yondosh kasalliklar (bir
+                        nechta/umuman yo'q bo'lishi mumkin)</label>
+                    <div id="chronicGroup" class="grid cols-2 mini">
+                        <label><input type="checkbox" value="rickets"> Raxit (defitsit vit-D, Ca)</label>
+                        <label><input type="checkbox" value="adenoid"> Adenoid</label>
+                        <label><input type="checkbox" value="gi"> Oshqozon ichak kasalliklari</label>
+                        <label><input type="checkbox" value="other"> Yoki boshqa</label>
+                    </div>
+                </div>
+
+                <div style="grid-column:1/-1"><label class="mini muted">Izoh</label><input id="note" type="text"
+                        placeholder="Ixtiyoriy"></div>
+            </div>
+
+            <div class="sep"></div>
+            <h3>3) <span class="icon-glow">😫</span> Bemorning shikoyatlari</h3>
+            <div class="grid cols-2 mini">
+                <label><input type="checkbox" id="c_sens"> Sezuvchanlik - issiq/sovuq</label>
+                <label><input type="checkbox" id="c_hal"> Yoqimsiz hid</label>
+                <label><input type="checkbox" id="c_pain"> Og'riq</label>
+                <label><input type="checkbox" id="c_other"> Yoki boshqa</label>
+            </div>
+            <div style="margin-top:6px"><input id="complaintNote" type="text"
+                    placeholder="Shikoyat bo'yicha izoh (ixtiyoriy)"></div>
+
+            <div class="sep"></div>
+            <h3>4) <span class="icon-glow">👁️</span> Tishni vizual baholash (obyektiv ko'rik)</h3>
+            <div class="grid cols-2">
+                <div>
+                    <label class="mini muted">Karies/Kovak</label>
+                    <select id="v_caries">
+                        <option value="no">Yo'q</option>
+                        <option value="yes">Bor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="mini muted">Tish devori</label>
+                    <select id="v_wall">
+                        <option value="all">Hammasi bor</option>
+                        <option value="missing">Bir yoki yarmi yo'q</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="mini muted">Yiring/yara mavjudligi</label>
+                    <select id="v_ulcer">
+                        <option value="no">Yo'q</option>
+                        <option value="yes">Bor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="mini muted">Oddiy shkala</label>
+                    <div class="legendScale"></div>
+                    <div class="mini muted" style="margin-top:4px">Yashil — a'lo, sariq — qoniqarli, qizil — yomon</div>
+
+                    <!-- YANGI: oddiy shkalaning miqdoriy indeksi -->
+                    <div class="row" style="margin-top:8px">
+                        <span class="tag">Oddiy shkala indeksi: <b id="simpleIdx">—</b></span>
+                    </div>
+                    <div class="meter" style="margin-top:6px">
+                        <div id="simpleBar" class="bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sep"></div>
+            <h3>5) <span class="icon-glow">⚙️</span> Funksional testlar</h3>
+            <div class="grid cols-2 mini">
+                <label><input type="checkbox" id="t_temp"> Muzdek suv ichish (temperaturniy test)</label>
+                <label><input type="checkbox" id="t_hard"> Qattiq ovqat (olma/sabzi/...)</label>
+            </div>
+
+            <div class="sep"></div>
+            <div class="row">
+                <button class="btn accent" id="calc">Natija va tavsiyalarni hisoblash</button>
+                <button class="btn" id="print">Chop etish / PDF</button>
+                <button class="btn ghost" id="exportJson">.JSON eksport</button>
+                <button class="btn ghost" id="copyTxt">Xulosani nusxalash</button>
+            </div>
+        </section>
+
+        <!-- COL 3: Natija + Tavsiyalar + Kundalik + Eslatmalar -->
+        <section class="card" id="result">
+            <h3>6) <span class="icon-glow">📊</span> Natija</h3>
+            <div class="kpi">
+                <div class="row">
+                    <div class="pill">SGP zo'rayish xavfi: <span class="score" id="riskOut">—</span></div>
+                    <span id="riskTag" class="tag">—</span>
+                </div>
+                <div class="meter">
+                    <div id="riskBar" class="bar"></div>
+                </div>
+                <div class="mini muted">Rasm belgilari: <span id="fInfl">—</span> blashka; <span id="fPlq">—</span>
+                    karash;
+                    <span id="fEdge">—</span> karies/tekstura
+                </div>
+            </div>
+
+            <div class="sep"></div>
+            <h3 style="margin:0 0 6px">7) <span class="icon-glow">🤖</span> Parodont holatini baholash (avto)</h3>
+            <div id="stage" class="pill">—</div>
+
+            <div class="sep"></div>
+            <!-- YANGI: Miqdoriy ko'rsatkichlar bir joyda -->
+            <h3 style="margin:0 0 6px"><span class="icon-glow">🔢</span> Miqdoriy ko'rsatkichlar</h3>
+            <ul id="quant" class="muted mini" style="margin-top:0">
+                <li>Oddiy shkala indeksi: —</li>
+                <li>Anketa/shikoyatlar hissasi (0–1): —</li>
+                <li>Komorbidlik/odatlar hissasi (0–1): —</li>
+                <li>Rasm: blashka —, karash —, karies —</li>
+            </ul>
+
+            <div class="sep"></div>
+            <h3 style="margin:0 0 6px">8) <span class="icon-glow">💡</span> Tavsiyalar</h3>
+            <ul id="reco" class="muted" style="margin-top:0">
+                <li>Anketani to'ldiring va/yoki rasmni tahlil qiling — shaxsiy tavsiyalar paydo bo'ladi.</li>
+            </ul>
+
+            <div class="sep"></div>
+            <h3 style="margin:0 0 6px">Audit jurnali</h3>
+            <div id="auditSwitch" class="row" style="margin-bottom:6px">
+                <button class="btn small" id="showHuman">O'qishli</button>
+                <button class="btn small ghost" id="showJson">JSON</button>
+            </div>
+            <div id="auditHuman" class="auditBox"></div>
+            <pre id="auditJson" class="at" style="display:none"></pre>
+
+            <div class="sep"></div>
+            <section id="diary">
+                <div class="row">
+                    <h3 style="margin:0">Kundalik (lokal)</h3>
+                    <button class="btn small right" id="saveDiary">Yozuvni saqlash</button>
+                </div>
+                <div class="grid cols-2" style="margin-top:8px">
+                    <div>
+                        <label class="mini muted">Yozuvga izoh</label>
+                        <textarea id="diaryNote" placeholder="Milklaringiz holati qanday? Nima qildingiz?"></textarea>
+                    </div>
+                    <div>
+                        <label class="mini muted">Qo'shimcha rasm qo'shish</label>
+                        <input type="file" id="diaryPhoto" accept="image/*" />
+                        <div class="mini muted" style="margin-top:6px">Rasmlar tarixi:</div>
+                        <div id="gallery" class="gallery"></div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="sep"></div>
+            <section id="rem">
+                <div class="row">
+                    <h3 style="margin:0">Eslatmalar</h3>
+                    <button class="btn small" id="askNotif">Bildirishnomalarga ruxsat</button>
+                </div>
+                <div class="grid cols-2" style="margin-top:8px">
+                    <div>
+                        <label class="mini muted">Sana va vaqt</label>
+                        <input type="datetime-local" id="remWhen" />
+                    </div>
+                    <div>
+                        <label class="mini muted">Eslatma matni</label>
+                        <input type="text" id="remText" placeholder="Tish tozalash, irrigator, shifokor qabuli..." />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:8px">
+                    <button class="btn" id="addRem">Eslatma qo'shish</button>
+                </div>
+                <ul id="remList" class="muted mini" style="margin-top:8px"></ul>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const $ = id => document.getElementById(id);
+            const now = () => new Date().toISOString().replace('T', ' ').slice(0, 19);
+            const clamp01 = x => Math.max(0, Math.min(1, x));
+            const auditLog = [];
+            const model = { version: $("modelVersion").textContent };
+
+            /* ===== helpers ===== */
+            function addAudit(entry) { auditLog.unshift(entry); renderAudit(); }
+            function renderAudit() {
+                $("auditHuman").innerHTML = auditLog.map(humanizeAuditItem).join("");
+                $("auditJson").textContent = auditLog.map(e => JSON.stringify(e, null, 2)).join("\n");
+            }
+            function humanizeAuditItem(e) {
+                if (e.action === "image-load") return `<div class="auditItem"><b>Rasm yuklash</b> • ${e.info} • <span class="muted">${e.ts}</span></div>`;
+                if (e.action === "photo-analyze") return `<div class="auditItem"><b>Foto-tahlil</b> • ROI ${e.roi.w}×${e.roi.h} • qizil=${(e.metrics.redFrac * 100).toFixed(1)}% • karash=${(e.metrics.plqFrac * 100).toFixed(1)}% • <span class="muted">${e.ts}</span></div>`;
+                if (e.action === "final-calc") return `<div class="auditItem"><b>Yakuniy hisob</b> • xavf=${(e.risk * 100).toFixed(0)}% • bosqich=${e.stage} • <span class="muted">${e.ts}</span></div>`;
+                if (e.action === "reset") return `<div class="auditItem"><b>Interfeysni tozalash</b> • <span class="muted">${e.ts}</span></div>`;
+                if (e.action === "diary-save") return `<div class="auditItem"><b>Kundalik</b> • yozuv qo'shildi • <span class="muted">${e.ts}</span></div>`;
+                if (e.action === "rem-add") return `<div class="auditItem"><b>Eslatma</b> • qo'shildi: ${e.text} • <span class="muted">${e.ts}</span></div>`;
+                if (e.action === "rem-fire") return `<div class="auditItem"><b>Eslatma</b> • ishladi: ${e.text} • <span class="muted">${e.ts}</span></div>`;
+                return `<div class="auditItem"><b>${e.action || "Hodisa"}</b> • <span class="muted">${e.ts}</span></div>`;
+            }
+
+            /* ===================== CANVAS / PHOTO ===================== */
+            let img = new Image(), imgBitmap = null, roi = null;
+            const canvas = $("canvas"), overlay = $("overlay");
+            const ctx = canvas.getContext("2d"), octx = overlay.getContext("2d");
+
+            const sliders = [
+                ["scale", "scaleVal", v => v],
+                ["inflSens", "inflSensVal", v => (v / 100).toFixed(2)],
+                ["inflSev", "inflSevVal", v => (v / 100).toFixed(2)],
+                ["plaqueT", "plaqueTVal", v => (v / 100).toFixed(2)],
+                ["initCariesT", "initCariesTVal", v => (v / 100).toFixed(2)]
+            ];
+            sliders.forEach(([id, lab, fmt]) => { const s = $(id), l = $(lab); const upd = () => l.textContent = fmt(s.value); s.addEventListener("input", upd); upd(); });
+
+            let dragging = false, start = null;
+            overlay.addEventListener("mousedown", e => {
+                if (!imgBitmap) return;
+                dragging = true; const r = overlay.getBoundingClientRect();
+                start = { x: e.clientX - r.left, y: e.clientY - r.top };
+            });
+            window.addEventListener("mousemove", e => {
+                if (!dragging) return;
+                const r = overlay.getBoundingClientRect();
+                const cur = { x: e.clientX - r.left, y: e.clientY - r.top };
+                roi = { x: Math.min(start.x, cur.x), y: Math.min(start.y, cur.y), w: Math.abs(cur.x - start.x), h: Math.abs(cur.y - start.y) };
+                drawOverlay();
+            });
+            window.addEventListener("mouseup", () => dragging = false);
+
+            $("file").addEventListener("change", async (e) => {
+                const f = e.target.files && e.target.files[0]; if (!f) return;
+                const url = URL.createObjectURL(f); await loadImage(url); URL.revokeObjectURL(url);
+            });
+
+            $("demo").addEventListener("click", async () => {
+                const tmp = document.createElement("canvas"); tmp.width = 1200; tmp.height = 800;
+                const tctx = tmp.getContext("2d");
+                tctx.fillStyle = "#111428"; tctx.fillRect(0, 0, tmp.width, tmp.height);
+                tctx.fillStyle = "#cc4c76"; tctx.beginPath(); tctx.ellipse(600, 380, 500, 180, 0, 0, Math.PI, true); tctx.fill();
+                for (let i = 0; i < 12; i++) { const x = 220 + i * 60; const y = 400; const w = 50; const h = 120; tctx.fillStyle = i % 5 === 0 ? "#f0e0a0" : "#f7f7f7"; tctx.fillRect(x, y, w, h); }
+                await loadImage(tmp.toDataURL("image/png"));
+            });
+
+            async function loadImage(src) {
+                return new Promise((resolve, reject) => {
+                    img.onload = () => {
+                        const targetW = parseInt($("scale").value, 10);
+                        const scale = targetW / img.naturalWidth;
+                        const w = targetW, h = Math.round(img.naturalHeight * scale);
+                        canvas.width = w; canvas.height = h; overlay.width = w; overlay.height = h;
+                        ctx.drawImage(img, 0, 0, w, h);
+                        imgBitmap = ctx.getImageData(0, 0, w, h);
+                        roi = { x: 0, y: 0, w: w, h: h };
+                        drawOverlay(true);
+                        addAudit({ ts: now(), action: "image-load", info: `${img.naturalWidth}×${img.naturalHeight} → ${w}×${h}` });
+                        resolve();
+                    };
+                    img.onerror = reject; img.src = src;
+                });
+            }
+
+            function drawOverlay(clearOnly = false) {
+                octx.clearRect(0, 0, overlay.width, overlay.height);
+                if (roi && roi.w > 4 && roi.h > 4) {
+                    octx.strokeStyle = "rgba(110,231,255,0.9)";
+                    octx.lineWidth = 2; octx.setLineDash([6, 4]);
+                    octx.strokeRect(roi.x, roi.y, roi.w, roi.h); octx.setLineDash([]);
+                }
+                if (clearOnly) return;
+                if (window._maskInfl && $("showInfl").checked) octx.putImageData(window._maskInfl, 0, 0);
+                if (window._maskPlq && $("showPlaque").checked) octx.putImageData(window._maskPlq, 0, 0);
+                if (window._edges && $("showEdges").checked) octx.putImageData(window._edges, 0, 0);
+            }
+            ["showInfl", "showPlaque", "showEdges"].forEach(id => $(id).addEventListener("change", () => { drawOverlay(true); drawOverlay(); }));
+
+            function rgb2hsv(r, g, b) {
+                r /= 255; g /= 255; b /= 255; const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min; let h = 0;
+                if (d !== 0) { switch (max) { case r: h = ((g - b) / d) % 6; break; case g: h = (b - r) / d + 2; break; case b: h = (r - g) / d + 4; break; } h *= 60; if (h < 0) h += 360; }
+                const s = max === 0 ? 0 : d / max, v = max; return [h, s, v];
+            }
+            function edgeMagnitude(data, w, h) {
+                const out = new ImageData(w, h); const T = parseInt($("edgeT").value, 10); const idx = (x, y) => (y * w + x) * 4;
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        const i = idx(x, y), iL = idx(x - 1, y), iR = idx(x + 1, y), iU = idx(x, y - 1), iD = idx(x, y + 1);
+                        const gx = (data[iR] - data[iL]) + (data[iR + 1] - data[iL + 1]) + (data[iR + 2] - data[iL + 2]);
+                        const gy = (data[iD] - data[iU]) + (data[iD + 1] - data[iU + 1]) + (data[iD + 2] - data[iU + 2]);
+                        const mag = Math.sqrt(gx * gx + gy * gy) / 3; const v = mag > T ? 255 : 0;
+                        out.data[i] = out.data[i + 1] = out.data[i + 2] = v; out.data[i + 3] = v ? 90 : 0;
+                    }
+                }
+                return out;
+            }
+            function roiBounds() {
+                if (!roi) return { x: 0, y: 0, w: canvas.width, h: canvas.height };
+                return {
+                    x: Math.max(0, Math.min(canvas.width - 1, Math.round(roi.x))),
+                    y: Math.max(0, Math.min(canvas.height - 1, Math.round(roi.y))),
+                    w: Math.max(1, Math.min(canvas.width, Math.round(roi.w))),
+                    h: Math.max(1, Math.min(canvas.height, Math.round(roi.h)))
+                };
+            }
+
+            let lastPhotoMetrics = null;
+            $("analyze").addEventListener("click", () => {
+                try {
+                    if (!$("consent").checked) { alert("Lokal qayta ishlashga rozilik bildirish kerak."); return; }
+                    if (!imgBitmap) { alert("Avval rasm yuklang."); return; }
+                    const { x, y, w, h } = roiBounds();
+                    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const arr = data.data;
+                    const totalPx = w * h;
+
+                    // Sliders and Settings
+                    const inflS = $("inflSens").value / 100; // Milk yallig'lanishi sezgirligi
+                    const inflV = $("inflSev").value / 100; // Kuchli yallig'lanish chegarasi
+                    const plqV = $("plaqueT").value / 100; // Tish blashkasi (Karash) chegarasi
+                    const mkV = $("initCariesT").value / 100; // Boshlang'ich karies chegarasi
+                    const blackT = 30; // Chuqur karies (Qora) ostonasi (Fixed)
+
+                    let redCount = 0, plaqueCount = 0, initCount = 0, deepCount = 0;
+
+                    // Masks
+                    const maskInfl = octx.createImageData(canvas.width, canvas.height);
+                    const maskPlq = octx.createImageData(canvas.width, canvas.height); // Karash
+                    const maskInit = octx.createImageData(canvas.width, canvas.height); // Init
+                    const maskDeep = octx.createImageData(canvas.width, canvas.height); // Deep
+
+                    const idx = (xx, yy) => (yy * canvas.width + xx) * 4;
+                    for (let yy = y; yy < y + h; yy++) {
+                        for (let xx = x; xx < x + w; xx++) {
+                            const i = idx(xx, yy), r = arr[i], g = arr[i + 1], b = arr[i + 2], a = arr[i + 3]; if (a === 0) continue;
+                            const [H, S, V] = rgb2hsv(r, g, b);
+
+                            // 1. Milk Yallig'lanishi (Red)
+                            // H: 0-15 or 345-360
+                            const isRedHue = (H <= 15 || H >= 345);
+                            const infl = isRedHue && S >= inflS && V >= (inflV * 0.5);
+
+                            // 2. Karash / Tish Blashkasi (Sariq/Yellow)
+                            // H: 25-55, S>=0.2, V>=plqV
+                            const isYellow = (H >= 25 && H <= 55 && S >= 0.20 && V >= plqV);
+                            const karash = isYellow;
+
+                            // 3. Boshlang'ich Karies (White / Brown)
+                            const isWhite = (V >= mkV && S <= 0.25);
+                            const isBrown = (H >= 0 && H <= 40 && V >= 0.20 && V <= 0.65 && S >= 0.20);
+                            const initCaries = isWhite || isBrown;
+
+                            // 4. Chuqur Karies (Qora)
+                            const deepCaries = (V * 255) < blackT;
+
+                            // Priority hierarchy for Visualization
+                            if (infl) {
+                                redCount++;
+                                if ($("showInfl").checked) {
+                                    maskInfl.data[i] = 255; maskInfl.data[i + 1] = 50; maskInfl.data[i + 2] = 50; maskInfl.data[i + 3] = 120; // Red
+                                }
+                            } else if (deepCaries) {
+                                deepCount++;
+                                if ($("showEdges").checked) {
+                                    maskDeep.data[i] = 0; maskDeep.data[i + 1] = 0; maskDeep.data[i + 2] = 0; maskDeep.data[i + 3] = 180; // Black
+                                }
+                            } else if (initCaries) {
+                                initCount++;
+                                if ($("showInfl").checked) {
+                                    // Blashka
+                                    maskInit.data[i] = 255; maskInit.data[i + 1] = 235; maskInit.data[i + 2] = 205; maskInit.data[i + 3] = 130;  // BlanchedAlmond
+                                }
+                            } else if (karash) {
+                                plaqueCount++;
+                                if ($("showPlaque").checked) {
+                                    maskPlq.data[i] = 255; maskPlq.data[i + 1] = 220; maskPlq.data[i + 2] = 100; maskPlq.data[i + 3] = 110; // Yellow
+                                }
+                            }
+                        }
+                    }
+                    // edgeMagnitude o'rniga biz to'g'ridan-to'g'ri to'ldirdik, shuning uchun eski chaqiruvni o'chirib, o'zgaruvchini oldindan tayyorlaymiz
+                    window._maskInfl = maskInfl; window._maskPlq = maskPlq; window._maskInit = maskInit; window._edges = maskDeep;
+                    drawOverlay(true);
+                    if ($("showInfl").checked) { octx.putImageData(maskInfl, 0, 0); octx.putImageData(maskInit, 0, 0); }
+                    if ($("showPlaque").checked) octx.putImageData(maskPlq, 0, 0);
+                    if ($("showEdges").checked) octx.putImageData(maskDeep, 0, 0);
+                    drawOverlay();
+                    const redFrac = redCount / totalPx;
+                    const plqFrac = plaqueCount / totalPx;
+                    const initFrac = initCount / totalPx;
+                    const deepFrac = deepCount / totalPx;
+
+                    lastPhotoMetrics = { redFrac, plqFrac, initFrac, deepFrac, area: totalPx };
+
+                    // UI Update
+                    $("fInfl").innerHTML = `<span style="color:#f55">Yallig: ${(redFrac * 100).toFixed(1)}%</span>`;
+                    $("fPlq").innerHTML = `<span style="color:#fe9">Karash: ${(plqFrac * 100).toFixed(1)}%</span>`;
+                    $("fEdge").innerHTML = `<span style="color:#fff">Bosh.K: ${(initFrac * 100).toFixed(1)}%</span> <span style="color:#aaa">Chuq.K: ${(deepFrac * 100).toFixed(1)}%</span>`;
+                    addAudit({ ts: now(), action: "photo-analyze", roi: { x, y, w, h }, metrics: lastPhotoMetrics, model: model.version });
+                } catch (err) { console.error(err); alert("Rasm tahlilida xatolik: " + err.message); }
+            });
+
+            $("exportImg").addEventListener("click", () => {
+                if (!imgBitmap) { alert("Rasm yo'q."); return; }
+                const out = document.createElement("canvas"); out.width = canvas.width; out.height = canvas.height + 120;
+                const c = out.getContext("2d");
+                c.fillStyle = "#0f1220"; c.fillRect(0, 0, out.width, out.height);
+                c.fillStyle = "#e7e9ff"; c.font = "700 18px Inter, Arial"; c.fillText("Hisobot: foto-tahlil (Demo)", 16, 28);
+                c.font = "14px Inter, Arial"; c.fillStyle = "#9aa3c7"; c.fillText("Sana/vaqt: " + now(), 16, 52);
+                c.drawImage(canvas, 0, 100);
+                if ($("showInfl").checked && window._maskInfl) c.putImageData(window._maskInfl, 0, 100);
+                if ($("showPlaque").checked && window._maskPlq) c.putImageData(window._maskPlq, 0, 100);
+                if ($("showEdges").checked && window._edges) c.putImageData(window._edges, 0, 100);
+                if (roi && roi.w > 4 && roi.h > 4) { c.strokeStyle = "#6ee7ff"; c.lineWidth = 2; c.setLineDash([6, 4]); c.strokeRect(roi.x, roi.y + 100, roi.w, roi.h); c.setLineDash([]); }
+                const url = out.toDataURL("image/png"); const a = document.createElement("a"); a.href = url; a.download = "perio_photo_report.png"; a.click();
+            });
+
+            $("reset").addEventListener("click", () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); octx.clearRect(0, 0, overlay.width, overlay.height);
+                imgBitmap = null; roi = null; window._maskInfl = window._maskPlq = window._edges = null; lastPhotoMetrics = null;
+                $("fInfl").textContent = $("fPlq").textContent = $("fEdge").textContent = "—";
+                addAudit({ ts: now(), action: "reset" });
+            });
+
+            /* ===================== ODDIY SHKALA → miqdoriy indeks ===================== */
+            function simpleScaleIndex() {
+                // Yangi logika: Caries (0.3), Wall (0.3), Ulcer (0.4)
+                const wC = 0.3, wW = 0.3, wU = 0.4;
+                const caries = $("v_caries").value === "yes" ? 1.0 : 0.0;
+                const wall = $("v_wall").value === "missing" ? 1.0 : 0.0;
+                const ulcer = $("v_ulcer").value === "yes" ? 1.0 : 0.0;
+
+                const idx = clamp01(wC * caries + wW * wall + wU * ulcer);
+                $("simpleIdx").textContent = Math.round(idx * 100) + "%";
+                $("simpleBar").style.width = Math.round(idx * 100) + "%";
+                return idx; // 0..1
+            }
+            ["v_caries", "v_wall", "v_ulcer"].forEach(id => $(id).addEventListener("change", simpleScaleIndex));
+            simpleScaleIndex(); // ishga tushirish
+
+            /* ===================== Anketa → yakuniy hisob ===================== */
+            function getCheckedValues(sel) {
+                return Array.from(document.querySelectorAll(sel)).filter(i => i.checked).map(i => i.value);
+            }
+
+            function computeFinal() {
+                // Foto bloki
+                const red = lastPhotoMetrics ? lastPhotoMetrics.redFrac : 0;
+                const plq = lastPhotoMetrics ? lastPhotoMetrics.plqFrac : 0;
+                const init = lastPhotoMetrics ? lastPhotoMetrics.initFrac : 0;
+                const deep = lastPhotoMetrics ? lastPhotoMetrics.deepFrac : 0;
+
+                // Foto-belgilar normirovkasi
+                const pInfl = clamp01(red / 0.15); // Milk yallig'lanishi
+                const pPlq = clamp01(plq / 0.20); // Karash
+                const pInit = clamp01(init / 0.15); // Boshlang'ich karies
+                const pDeep = clamp01(deep / 0.05); // Chuqur karies (Juda xavfli!)
+
+                // Og'irliklar: Chuqur > Bosh > Yallig > Karash
+                const photo = 0.40 * pDeep + 0.25 * pInit + 0.20 * pInfl + 0.15 * pPlq;
+
+                // Shikoyatlar (yangilangan)
+                // Sezuvchanlik (0.15), Hid (0.10), Og'riq (0.20), Boshqa/Izoh (0.05)
+                const w = { sens: 0.15, hal: 0.10, pain: 0.20, other: 0.05, temp: 0.10, hard: 0.08 };
+                const q =
+                    ($("c_sens").checked ? w.sens : 0) +
+                    ($("c_hal").checked ? w.hal : 0) +
+                    ($("c_pain").checked ? w.pain : 0) +
+                    ($("c_other").checked ? w.other : 0) +
+                    ($("t_temp").checked ? w.temp : 0) +
+                    ($("t_hard").checked ? w.hard : 0);
+                const qNorm = clamp01(q / 0.68); // Max: 0.15+0.10+0.20+0.05+0.10+0.08 = 0.68
+
+                // O'z-o'zini baholash (oddiy shkaladan olinadi)
+                const vNorm = simpleScaleIndex(); // 0..1
+
+                // Komorbidlik/odatlar
+                const chronic = getCheckedValues("#chronicGroup input[type=checkbox]");
+                const habits = getCheckedValues(".habit");
+                let com = 0;
+                if (chronic.includes("rickets")) com += 0.15;
+                if (chronic.includes("adenoid")) com += 0.12;
+                if (chronic.includes("gi")) com += 0.10;
+                if (chronic.includes("other")) com += 0.05;
+                if (habits.includes("diet")) com += 0.08;
+                if (habits.includes("hygiene")) com += 0.12;
+                if (habits.includes("mouthBreath")) com += 0.08;
+                const comNorm = clamp01(com / 0.70);
+
+                // Yig'indisi skor
+                const lin = 0.50 * photo + 0.35 * clamp01(qNorm * 0.7 + vNorm * 0.3) + 0.15 * comNorm;
+                const a = 3.1, b = 0.52;
+                const risk = 1 / (1 + Math.exp(-a * (lin - b)));
+                return { risk, photo, qNorm, vNorm, comNorm, chronic, habits };
+            }
+
+            function stageFromRisk(r) {
+                if (r < 0.20) return { text: "Sog'lom parodont", cls: "good" };
+                if (r < 0.40) return { text: "Parodontit 1-daraja (yengil)", cls: "warn" };
+                if (r < 0.60) return { text: "Parodontit 2-daraja (shifokorga borish shart)", cls: "warn" };
+                if (r < 0.80) return { text: "Rivojlangan parodontit (3-daraja) — shifokorga borish shart", cls: "bad" };
+                return { text: "Og'ir bosqich — ZUDLIK BILAN shifokorga", cls: "bad" };
+            }
+
+            function buildRecommendations(risk, ctxInfo) {
+                const out = [];
+                out.push("Har kuni: o'rtacha qattiqlikdagi tish cho'tkasi 2×/kun 2–3 daq, ftorli pasta; tilni tozalash.");
+                out.push("1×/kun: tish ipi/yoshikchalar; imkon bo'lsa — irrigator.");
+                if (risk < 0.20) {
+                    out.push("Har 6–12 oyda stomatolog-gigiyenist ko'rigi.");
+                } else if (risk < 0.40) {
+                    out.push("Professional gigiyena va parvarishni o'rganish tavsiya etiladi (3–6 oy).");
+                    out.push("Milk qizarishi bor joylarni kuzating: shirin/yopishqoq ovqatlarni kamaytiring, suv iching.");
+                } else if (risk < 0.60) {
+                    out.push("Ko'rik va davolashni rejalashtirish uchun stomatolog-parodontologga yoziling.");
+                    out.push("Mahalliy yallig'lanishga qarshi terapiya va milk osti yig'indilarini tozalash mumkin.");
+                } else if (risk < 0.80) {
+                    out.push("Tashrifni kechiktirmang: kompleks terapiya zarur (skevling/ildizlarni rejalash, gigiyena koreksiyasi).");
+                    out.push("Shifokor bilan qo'shimcha tekshiruvlar va nazorat tashriflarini muhokama qiling.");
+                } else {
+                    out.push("Zudlik bilan shifokorga. Tishlarning yo'qolishi va rivojlanish xavfi yuqori.");
+                    out.push("Tizimli terapiya va kengaytirilgan diagnostika mumkin (shifokor ko'rsatmasi bo'yicha).");
+                }
+                if (ctxInfo.com) { out.push("Yondosh kasalliklarni (raxit, adenoid, oshqozon-ichak) va zararli odatlarni (ovqatlanish, gigiyena, og'izdan nafas) nazorat qilish parodont uchun xavflarni sezilarli darajada kamaytiradi."); }
+                out.push("Quyidagi hollarda zudlik bilan stomatologga murojaat qiling: kuchli qonash, yiring/yaralar, chaynashda og'riq, tishlar qimirlashi, tana harorati ko'tarilishi.");
+                return out;
+            }
+
+            function renderQuant({ vNorm, qNorm, comNorm }) {
+                const pm = lastPhotoMetrics ? `Rasm: blashka ${(lastPhotoMetrics.redFrac * 100).toFixed(1)}%, karash ${(lastPhotoMetrics.plqFrac * 100).toFixed(1)}%, karies ${(lastPhotoMetrics.edgeFrac * 100).toFixed(1)}%`
+                    : "Rasm: —";
+                $("quant").innerHTML = `
+<li>Oddiy shkala indeksi: ${(vNorm * 100).toFixed(0)}%</li>
+<li>Anketa/shikoyatlar hissasi (0–1): ${qNorm.toFixed(2)}</li>
+<li>Komorbidlik/odatlar hissasi (0–1): ${comNorm.toFixed(2)}</li>
+<li>${pm}</li>
+`;
+            }
+
+            function renderResult() {
+                try {
+                    const { risk, photo, qNorm, vNorm, comNorm, chronic, habits } = computeFinal();
+                    $("riskOut").textContent = Math.round(risk * 100) + "%";
+                    $("riskBar").style.width = Math.round(risk * 100) + "%";
+                    const lvl = risk < 0.34 ? "Past" : risk < 0.67 ? "O'rtacha" : "Yuqori";
+                    const tag = $("riskTag"); tag.className = "tag " + (risk < 0.34 ? "good" : risk < 0.67 ? "warn" : "bad"); tag.textContent = lvl + ` (${Math.round(risk * 100)}%)`;
+                    const st = stageFromRisk(risk);
+                    $("stage").className = "pill " + (st.cls === "good" ? "good" : st.cls === "warn" ? "warn" : "bad");
+                    $("stage").textContent = st.text;
+
+                    renderQuant({ vNorm, qNorm, comNorm });
+
+                    const recos = buildRecommendations(risk, { com: chronic.length > 0 || habits.length > 0 });
+                    $("reco").innerHTML = recos.map(x => `<li>${x}</li>`).join("");
+
+                    const entry = {
+                        ts: now(), action: "final-calc", risk: +risk.toFixed(4), stage: st.text,
+                        photoBlock: +photo.toFixed(3), questionnaire: +qNorm.toFixed(3),
+                        selfview: +vNorm.toFixed(3), comorb: +comNorm.toFixed(3),
+                        fio: $("fio").value || null, age: $("age").value || null, sex: $("sex").value || null
+                    };
+                    addAudit(entry);
+                    window._lastConclusion = [
+                        `Parodont assistenti (Demo)`,
+                        `Vaqt: ${entry.ts}`,
+                        `Bemor: ${($("fio").value || "—")}, yosh ${($("age").value || "—")}, jins ${($("sex").value || "—")}`,
+                        `SGP zo'rayish xavfi: ${(entry.risk * 100).toFixed(0)}%`,
+                        `Bosqich: ${entry.stage}`,
+                        lastPhotoMetrics ? `Rasm: blashka ${(lastPhotoMetrics.redFrac * 100).toFixed(1)}%, karash ${(lastPhotoMetrics.plqFrac * 100).toFixed(1)}%, karies ${(lastPhotoMetrics.edgeFrac * 100).toFixed(1)}%` : "Rasm: —",
+                        `Oddiy shkala indeksi: ${(entry.selfview * 100).toFixed(0)}%`,
+                        `Izoh: demonstratsion vosita; shifokor maslahati o'rnini bosmaydi.`
+                    ].join("\n");
+                } catch (err) { console.error(err); alert("Hisoblashda xatolik: " + err.message); }
+            }
+
+            $("calc").addEventListener("click", renderResult);
+            $("print").addEventListener("click", () => window.print());
+            $("copyTxt").addEventListener("click", () => {
+                if (!window._lastConclusion) renderResult();
+                navigator.clipboard.writeText(window._lastConclusion || ""); alert("Xulosa nusxalandi.");
+            });
+            $("exportJson").addEventListener("click", () => {
+                const data = { exportedAt: now(), model: model.version, audit: auditLog };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                const url = URL.createObjectURL(blob); const a = document.createElement("a");
+                a.href = url; a.download = "perio_assistant_audit.json"; a.click(); URL.revokeObjectURL(url);
+            });
+
+            /* ===== Audit o'tkazgichlari ===== */
+            $("showHuman").addEventListener("click", () => { $("auditHuman").style.display = ""; $("auditJson").style.display = "none"; });
+            $("showJson").addEventListener("click", () => { $("auditHuman").style.display = "none"; $("auditJson").style.display = ""; });
+
+            /* ===== Kundalik / eslatmalar (mantiq o'zgarishsiz) ===== */
+            const LS_KEY = "perio_diary_v1";
+            function loadDiary() { try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { return []; } }
+            function saveDiaryList(list) { localStorage.setItem(LS_KEY, JSON.stringify(list)); }
+            function renderGallery(list) {
+                const g = $("gallery"); g.innerHTML = "";
+                list.forEach((it, i) => {
+                    const d = document.createElement("div"); d.className = "thumb";
+                    const img = document.createElement("img"); img.src = it.img; d.appendChild(img);
+                    const cap = document.createElement("div"); cap.className = "cap"; cap.textContent = `${it.when} • ${it.stage}`;
+                    const del = document.createElement("div"); del.className = "del"; del.textContent = "O'chirish";
+                    del.onclick = () => { const l = loadDiary(); l.splice(i, 1); saveDiaryList(l); renderGallery(l); };
+                    d.appendChild(cap); d.appendChild(del); g.appendChild(d);
+                });
+            }
+            renderGallery(loadDiary());
+
+            async function toDataURLFromCanvas() {
+                if (!imgBitmap) { return null; }
+                const out = document.createElement("canvas"); out.width = canvas.width; out.height = canvas.height;
+                const c = out.getContext("2d");
+                c.drawImage(canvas, 0, 0);
+                if ($("showInfl").checked && window._maskInfl) c.putImageData(window._maskInfl, 0, 0);
+                if ($("showPlaque").checked && window._maskPlq) c.putImageData(window._maskPlq, 0, 0);
+                if ($("showEdges").checked && window._edges) c.putImageData(window._edges, 0, 0);
+                if (roi && roi.w > 4 && roi.h > 4) { c.strokeStyle = "#6ee7ff"; c.lineWidth = 2; c.setLineDash([6, 4]); c.strokeRect(roi.x, roi.y, roi.w, roi.h); c.setLineDash([]); }
+                return out.toDataURL("image/png");
+            }
+
+            $("saveDiary").addEventListener("click", async () => {
+                if (!window._lastConclusion) renderResult();
+                const when = now();
+                const l = loadDiary();
+                let imgData = null;
+                const f = $("diaryPhoto").files && $("diaryPhoto").files[0];
+                if (f) { imgData = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); }); }
+                else { imgData = await toDataURLFromCanvas(); }
+                const riskText = $("riskOut").textContent || "—";
+                const stageText = $("stage").textContent || "—";
+                l.unshift({ when, risk: riskText, stage: stageText, note: $("diaryNote").value || "", img: imgData || "" });
+                saveDiaryList(l); renderGallery(l);
+                alert("Yozuv kundalikka saqlandi (lokal).");
+                addAudit({ ts: when, action: "diary-save", info: "Kundalik yozuvi qo'shildi" });
+            });
+
+            /* eslatmalar */
+            const RKEY = "perio_reminders_v1";
+            function loadRem() { try { return JSON.parse(localStorage.getItem(RKEY) || "[]"); } catch { return []; } }
+            function saveRem(list) { localStorage.setItem(RKEY, JSON.stringify(list)); }
+            function renderRem() {
+                const ul = $("remList"); const list = loadRem(); ul.innerHTML = "";
+                list.sort((a, b) => new Date(a.when) - new Date(b.when));
+                list.forEach((r, i) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${r.when} — ${r.text}`;
+                    const btn = document.createElement("button"); btn.className = "btn small ghost"; btn.textContent = "O'chirish";
+                    btn.onclick = () => { const l = loadRem(); l.splice(i, 1); saveRem(l); renderRem(); addAudit({ ts: now(), action: "rem-delete", text: r.text }); };
+                    li.appendChild(document.createTextNode(" ")); li.appendChild(btn);
+                    ul.appendChild(li);
+                });
+            }
+            renderRem();
+
+            $("askNotif").addEventListener("click", () => { if (window.Notification) Notification.requestPermission(); });
+            $("addRem").addEventListener("click", () => {
+                const when = $("remWhen").value; const text = $("remText").value.trim();
+                if (!when || !text) { alert("Sana/vaqt va matnni kiriting."); return; }
+                const list = loadRem(); list.push({ when, text, done: false }); saveRem(list); renderRem();
+                addAudit({ ts: now(), action: "rem-add", text });
+            });
+
+            setInterval(() => {
+                const list = loadRem(); const nowMs = Date.now();
+                list.forEach(r => {
+                    if (r.done) return; const due = new Date(r.when).getTime();
+                    if (!isNaN(due) && due <= nowMs) {
+                        r.done = true; saveRem(list); renderRem();
+                        try {
+                            if (window.Notification && Notification.permission === "granted") new Notification("Eslatma: parodont", { body: r.text });
+                            else alert("Eslatma: " + r.text);
+                        } catch { alert("Eslatma: " + r.text); }
+                        addAudit({ ts: now(), action: "rem-fire", text: r.text });
+                    }
+                });
+            }, 60000);
+
+            /* boshlang'ich render, hammasi "jonli" bo'lishi uchun */
+            renderAudit();
+        });
+    </script>
+</body>
+
+</html>
